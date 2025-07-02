@@ -1,0 +1,9 @@
+.opacity-enter-active,
+.opacity-leave-active {
+    transition: opacity 0.3s linear;
+}
+
+.opacity-enter-from,
+.opacity-leave-to {
+    opacity: 0;
+}
