@@ -1,33 +1,22 @@
-import type { IResponse } from '@/types/IResponse';
-import axios from 'axios';
-import Toast from './Toast';
+import axios, { type AxiosResponse } from 'axios'
 
-const request = axios.create({
+const instance = axios.create({
     baseURL: '/api',
-});
+})
 
-request.interceptors.request.use(
-    (config) => {
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+// 请求拦截器
+instance.interceptors.request.use(config => { return config }, error => Promise.reject(error))
 
-request.interceptors.response.use(
-    (response) => {
-        const data: IResponse<unknown> = response.data
-        if (data.status === 500) {
-            Toast.error(data.message)
-            return Promise.reject(data.message);
+// 响应拦截器
+instance.interceptors.response.use(
+    (response: AxiosResponse) => {
+        const res = response.data
+        if (res.code === 500) {
+            alert(res.message)
+            return Promise.reject(res.message);
         }
-
-        return response.data;
+        return res
     },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
-export default request;
+    error => { return Promise.reject(error) }
+)
+export default instance

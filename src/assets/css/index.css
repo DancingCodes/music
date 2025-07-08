@@ -1,7 +1,8 @@
 html {
-    background-color: #212726;
+    background-color: #102a27;
     color: #fff;
 }
+
 
 body {
     margin: 0;
@@ -14,4 +15,8 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }

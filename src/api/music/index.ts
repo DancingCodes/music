@@ -1,5 +1,5 @@
+import type { IPageParams, IPageResponse } from "@/types/common";
 import request from "@/utils/request";
-import { type IResponse, type IPagingParams, type IPagingResponse } from '@/types/IResponse'
 
 export interface IMusic {
     id: number,
@@ -11,14 +11,16 @@ export interface IMusic {
     url: string,
 }
 
-export interface ISearchMusicParams extends IPagingParams {
-    name: string;
+export interface IGetMusicListParams extends IPageParams {
+    name: string
 }
-export interface ISearchMusicResponse extends IPagingResponse<IMusic> { }
-export const getMusicList = (data: ISearchMusicParams): Promise<IResponse<ISearchMusicResponse>> => request.post('/music/getMusicList', data)
-export const getWYMusicList = (data: ISearchMusicParams): Promise<IResponse<ISearchMusicResponse>> => request.post('/music/getWYMusicList', data)
 
-export interface ISaveWYMusicParams {
-    id: number;
+export const getMusicList = (params?: IGetMusicListParams) => request.get<IPageResponse<IMusic>>('/music', { params })
+export const getWyMusicList = (params?: IGetMusicListParams) => request.get<IPageResponse<IMusic>>('/music/wyList', { params })
+
+export interface IAddMusicParams {
+    id: number
 }
-export const saveWyMusic = (data: ISaveWYMusicParams) => request.post('/music/saveWyMusic', data)
+export const addMusic = (data: IAddMusicParams) => request.post('/music', data)
+
+
