@@ -16,7 +16,7 @@
                             {{ currentMusic.name }}
                         </div>
                         <div class="text-0.16rem max-sm:text-0.5rem">
-                            {{currentMusic.artists.map(i => i.name).join('')}}
+                            {{currentMusic.artists.map(i => i.name).join(' - ')}}
                         </div>
                     </div>
                 </div>
@@ -83,19 +83,27 @@
             Moonc music
         </div>
 
-        <div class="fixed h-100% w-30% right-0 top-0 bg-[rgba(0,0,0,0.7)] flex flex-col gap-0.1rem px-0.1rem py-0.06rem box-border transition-500 max-sm:w-100% max-sm:px-0.4rem max-sm:py-0.5rem max-sm:justify-end max-sm:bg-[rgba(0,0,0,0.7)]"
+        <div class="fixed h-100% w-30% right-0 top-0 bg-[rgba(0,0,0,0.7)] flex flex-col gap-0.1rem px-0.1rem py-0.06rem box-border transition-500 max-sm:w-100% max-sm:px-0.4rem max-sm:py-0.5rem  max-sm:bg-[rgba(0,0,0,0.7)]"
             :class="{ 'sm:transform-translate-x-100%': isIdle, 'max-sm:transform-translate-y-100%': isCollapsed }"
             @click="isCollapsed = !isCollapsed">
 
+            <div class="hidden max-sm:block text-0.5rem text-center">
+                <svg viewBox="0 0 1819 1024" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                    fill="currentColor">
+                    <path
+                        d="M1788.06 37.13h-5.63a112.53 112.53 0 0 0-154.16 0L909.22 750.56 191.30 31.51a112.53 112.53 0 0 0-154.16 0 112.53 112.53 0 0 0 0 154.16L832.70 992.49a112.53 112.53 0 0 0 154.16 0l801.20-801.20a112.53 112.53 0 0 0 0-154.16z" />
+                </svg>
+            </div>
+
             <div
-                class="flex items-center bg-#102a27 rounded-3px px-0.05rem py-0.03rem box-border text-0.12rem gap-0.05rem max-sm:text-0.46rem max-sm:px-0.2rem max-sm:py-0.1rem max-sm:gap-0.16rem">
+                class="flex items-center bg-#102a27 rounded-3px px-0.05rem py-0.03rem box-border text-0.12rem gap-0.05rem max-sm:text-0.46rem max-sm:px-0.2rem max-sm:py-0.2rem max-sm:gap-0.16rem">
                 <span class="cursor-pointer" :class="{ 'color-#ff0000': isSerachWy }"
                     @click.stop="isSerachWy = !isSerachWy; sreachMusic()">
                     T
                 </span>
                 <input type="text"
-                    class="flex-1 bg-transparent border-none outline-unset p-0 color-#fff text-0.12rem py-0.01rem max-sm:text-0.46rem"
-                    v-model="queryParams.name" @keydown.enter="sreachMusic">
+                    class="flex-1 bg-transparent border-none outline-unset p-0 color-#fff text-0.12rem py-0.01rem max-sm:text-0.46rem max-sm:w-100%"
+                    v-model="queryParams.name" @keydown.enter="sreachMusic" @click.stop>
                 <span class="cursor-pointer" @click.stop="sreachMusic">搜索</span>
             </div>
 
@@ -105,7 +113,7 @@
                     class="flex items-center justify-between cursor-pointer transition-500"
                     :class="{ 'color-#ff0000 font-bold': currentMusic?.id === i.id }">
                     <div>{{ i.name }}</div>
-                    <div>{{i.artists.map(i => i.name).join('')}}</div>
+                    <div>{{i.artists.map(i => i.name).join(' - ')}}</div>
                 </div>
 
                 <div v-if="loading" class="text-center text-0.13rem max-sm:text-0.6rem">
