@@ -119,6 +119,9 @@
                 <div v-if="loading" class="text-center text-0.13rem max-sm:text-0.6rem">
                     loading...
                 </div>
+                <div v-if="!loading && !total" class="text-center text-0.13rem max-sm:text-0.6rem">
+                    无数据
+                </div>
             </div>
         </div>
     </div>
