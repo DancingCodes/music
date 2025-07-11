@@ -83,7 +83,7 @@
             Moonc music
         </div>
 
-        <div class="fixed h-100% w-30% right-0 top-0 bg-[rgba(0,0,0,0.7)] flex flex-col gap-0.1rem px-0.1rem py-0.06rem box-border transition-500 max-sm:w-100% max-sm:px-0.4rem max-sm:py-0.5rem  max-sm:bg-[rgba(0,0,0,0.7)]"
+        <div class="fixed h-100% w-36% right-0 top-0 bg-[rgba(0,0,0,0.7)] flex flex-col gap-0.1rem px-0.1rem py-0.06rem box-border transition-500 max-sm:w-100% max-sm:px-0.4rem max-sm:py-0.5rem  max-sm:bg-[rgba(0,0,0,0.7)]"
             :class="{ 'sm:transform-translate-x-100%': isIdle, 'max-sm:transform-translate-y-100%': isCollapsed }"
             @click="isCollapsed = !isCollapsed">
 
@@ -107,13 +107,14 @@
                 <span class="cursor-pointer" @click.stop="sreachMusic">搜索</span>
             </div>
 
-            <div class="flex-1 flex flex-col gap-0.04rem text-0.12rem overflow-y-auto no-scrollbar max-sm:h-10rem max-sm:text-0.46rem max-sm:flex-none max-sm:gap-0.1rem "
+            <div class="flex-1 flex flex-col gap-0.06rem text-0.12rem overflow-y-auto no-scrollbar max-sm:text-0.46rem max-sm:gap-0.3rem "
                 ref="musicListRef" @scroll="loadMore()">
                 <div v-for="i in musicList" :key="i.id" @click.stop="playMusic(i)"
-                    class="flex items-center justify-between cursor-pointer transition-500"
+                    class="flex items-center justify-between cursor-pointer transition-500 gap-0.2rem max-sm:gap-1rem"
                     :class="{ 'color-#ff0000 font-bold': currentMusic?.id === i.id }">
-                    <div>{{ i.name }}</div>
-                    <div>{{i.artists.map(i => i.name).join(' - ')}}</div>
+                    <div class="overflow-hidden whitespace-nowrap text-ellipsis flex-1">{{ i.name }}</div>
+                    <div class="overflow-hidden whitespace-nowrap text-ellipsis w-1rem text-right max-sm:w-2rem">{{i.artists.map(i =>
+                        i.name).join(' - ')}}</div>
                 </div>
 
                 <div v-if="loading" class="text-center text-0.13rem max-sm:text-0.6rem">
@@ -150,7 +151,7 @@ const isSerachWy = ref(false)
 
 const queryParams = reactive({
     pageNo: 1,
-    pageSize: 20,
+    pageSize: 30,
     name: '',
 })
 
