@@ -1,16 +1,25 @@
 <template>
-    <div class="h-100vh  overflow-hidden">
+    <div class="h-100vh overflow-hidden">
 
         <div v-if="currentMusic" class="h-100% flex flex-col">
             <div
                 class="flex-1 flex items-center overflow-hidden px-0.6rem max-sm:flex-col max-sm:py-0.5rem max-sm:box-border">
-                <div
-                    class="flex-1 flex flex-col items-center justify-center  max-sm:flex-none max-sm:flex-row max-sm:gap-0.3rem">
-                    <img :src="currentMusic.picUrl"
-                        class="w-1.5rem h-1.5rem rounded-full animate-spin max-sm:w-2rem max-sm:h-2rem"
-                        style="animation-duration: 20s" :style="{
-                            animationPlayState: isPlaying ? 'running' : 'paused',
-                        }" />
+                <div class="flex-1 flex flex-col items-center justify-center max-sm:flex-none">
+
+                    <div class="relative w-1.5rem h-1.5rem max-sm:hidden">
+                        <div class="w-100% h-100% animate-spin bg-[url('https://filestore.moonc.love/uploadFiles/1752216410894-161065103.png')] bg-cover p-0.3rem box-border max-sm:w-2rem max-sm:h-2rem"
+                            style="animation-duration: 20s" :style="{
+                                animationPlayState: isPlaying ? 'running' : 'paused',
+                            }">
+                            <img :src="currentMusic.picUrl" class="w-100% h-100% rounded-full" />
+                        </div>
+                        <img src="https://filestore.moonc.love/uploadFiles/1752216426296-916133906.png" alt=""
+                            class="h-1.1rem absolute top-0 right-0 transform-translate-[76%,-20%] transform-origin-top-right transition-500"
+                            :class="{ 'transform-rotate-[-16deg]': !isPlaying }">
+                    </div>
+
+
+
                     <div class="flex flex-col items-center justify-center text-0.2rem max-sm:text-0.6rem">
                         <div class="mt-0.1rem">
                             {{ currentMusic.name }}
@@ -21,7 +30,7 @@
                     </div>
                 </div>
                 <div
-                    class="flex-1 h-88% overflow-y-auto pointer-events-none flex flex-col gap-0.05rem items-center text-0.15rem text-center no-scrollbar max-sm:text-0.5rem max-sm:mt-0.5rem max-sm:gap-0.1rem max-sm:h-unset">
+                    class="flex-1 h-88% overflow-y-auto pointer-events-none flex flex-col gap-0.05rem items-center text-0.15rem text-center no-scrollbar max-sm:text-0.5rem max-sm:mt-0.3rem max-sm:gap-0.1rem max-sm:h-unset">
                     <div v-for="(item, index) in parsedLyrics" :ref="el => { lyricRefs[index] = el as HTMLElement }"
                         class="transition-500" :class="{ 'color-#ff0000 font-bold': currentLyricIndex === index }">
                         {{ item.text }}
@@ -59,7 +68,7 @@
                         </svg>
                     </span>
 
-                    <span class="hidden max-sm:block" @click="isCollapsed = false">
+                    <span class="hidden max-sm:block" @click="isCollapsed = false; centerMusicItem()">
                         <svg viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -68,10 +77,10 @@
                     </span>
                 </div>
                 <div class="flex-1 h-0.06rem relative max-sm:h-0.16rem">
-                    <div class="absolute h-100% w-100% left-0 right-0 rounded-tr-3px rounded-br-3px bg-[rgba(0,0,0,0.3)] transition-500 "
+                    <div class="absolute h-100% w-100% left-0 right-0 rounded-tr-6px rounded-br-6px bg-[rgba(0,0,0,0.3)] transition-500 "
                         :style="{ transform: `translateX(${(buffered - 1) * 100}%)` }"></div>
 
-                    <div class="absolute h-100% w-100% left-0 right-0 rounded-tr-3px rounded-br-3px bg-#ff0000  transition-500 "
+                    <div class="absolute h-100% w-100% left-0 right-0 rounded-tr-6px rounded-br-6px bg-#ff0000  transition-500 "
                         :style="{ transform: `translateX(${(progress - 1) * 100}%)` }">
                     </div>
                 </div>
@@ -83,11 +92,11 @@
             Moonc music
         </div>
 
-        <div class="fixed h-100% w-36% right-0 top-0 bg-[rgba(0,0,0,0.7)] flex flex-col gap-0.1rem px-0.1rem py-0.06rem box-border transition-500 max-sm:w-100% max-sm:px-0.4rem max-sm:py-0.5rem  max-sm:bg-[rgba(0,0,0,0.7)]"
-            :class="{ 'sm:transform-translate-x-100%': isIdle, 'max-sm:transform-translate-y-100%': isCollapsed }"
-            @click="isCollapsed = !isCollapsed">
+        <div class="fixed h-100% w-32% right-0 top-0 bg-[rgba(0,0,0,0.7)] flex flex-col gap-0.1rem px-0.1rem py-0.06rem box-border transition-500 max-sm:w-100% max-sm:px-0.4rem max-sm:py-0.5rem  max-sm:bg-[rgba(0,0,0,0.7)]"
+            :class="{ 'sm:transform-translate-x-100%': isIdle && !musicListHover, 'max-sm:transform-translate-y-100%': isCollapsed }"
+            @mouseenter="musicListHover = true; centerMusicItem()" @mouseleave="musicListHover = false">
 
-            <div class="hidden max-sm:block text-0.5rem text-center">
+            <div class="hidden max-sm:block text-0.5rem text-center" @click="isCollapsed = !isCollapsed">
                 <svg viewBox="0 0 1819 1024" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                     fill="currentColor">
                     <path
@@ -109,12 +118,14 @@
 
             <div class="flex-1 flex flex-col gap-0.06rem text-0.12rem overflow-y-auto no-scrollbar max-sm:text-0.46rem max-sm:gap-0.3rem "
                 ref="musicListRef" @scroll="loadMore()">
-                <div v-for="i in musicList" :key="i.id" @click.stop="playMusic(i)"
+                <div v-for="(i, index) in musicList" :key="i.id"
+                    :ref="el => { musicRowRefs[index] = el as HTMLElement }" @click.stop="playMusic(i)"
                     class="flex items-center justify-between cursor-pointer transition-500 gap-0.2rem max-sm:gap-1rem"
                     :class="{ 'color-#ff0000 font-bold': currentMusic?.id === i.id }">
                     <div class="overflow-hidden whitespace-nowrap text-ellipsis flex-1">{{ i.name }}</div>
-                    <div class="overflow-hidden whitespace-nowrap text-ellipsis w-1rem text-right max-sm:w-2rem">{{i.artists.map(i =>
-                        i.name).join(' - ')}}</div>
+                    <div class="overflow-hidden whitespace-nowrap text-ellipsis w-1rem text-right max-sm:w-2rem">
+                        {{i.artists.map(i =>
+                            i.name).join(' - ')}}</div>
                 </div>
 
                 <div v-if="loading" class="text-center text-0.13rem max-sm:text-0.6rem">
@@ -165,6 +176,9 @@ const musicList = ref<IMusic[]>([])
 const total = ref(0)
 const loading = ref(false)
 const isCollapsed = ref(true)
+const musicListHover = ref(false)
+const musicListRef = ref()
+const musicRowRefs = ref<HTMLElement[]>([])
 const getList = async () => {
     loading.value = true
     const api = isSerachWy.value ? getWyMusicList : getMusicList
@@ -174,7 +188,6 @@ const getList = async () => {
     loading.value = false
 }
 
-const musicListRef = ref()
 const loadMore = () => {
     if (musicList.value.length >= total.value || loading.value) {
         return
@@ -186,6 +199,17 @@ const loadMore = () => {
         getList();
     }
 };
+
+const centerMusicItem = () => {
+    const current = currentMusic.value;
+    if (!current) return;
+    const index = musicList.value.findIndex(i => i.id === current.id)
+    musicRowRefs.value[index].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+    })
+}
+
 
 const currentMusic = ref<IMusic>()
 const parsedLyrics = ref<ILyric[]>([])
@@ -209,7 +233,7 @@ const togglePlay = () => {
     isPlaying.value ? pause() : play()
 }
 
-function playRelative(direction: 'prev' | 'next') {
+const playRelative = (direction: 'prev' | 'next') => {
     const list = musicList.value
     if (list.length === 0) return
 
