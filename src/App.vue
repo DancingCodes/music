@@ -87,16 +87,16 @@
             </div>
         </div>
 
-        <div v-else class="h-100% flex items-center justify-center text-0.5rem max-sm:text-1rem"
-            @click="isCollapsed = !isCollapsed">
+        <div v-else class="h-100% flex items-center justify-center text-0.5rem max-sm:text-1rem">
             Moonc music
         </div>
 
         <div class="fixed h-100% w-32% right-0 top-0 bg-[rgba(0,0,0,0.7)] flex flex-col gap-0.1rem px-0.1rem py-0.06rem box-border transition-500 max-sm:w-100% max-sm:px-0.4rem max-sm:py-0.5rem  max-sm:bg-[rgba(0,0,0,0.7)]"
-            :class="{ 'sm:transform-translate-x-100%': isIdle && !musicListHover, 'max-sm:transform-translate-y-100%': isCollapsed }"
-            @mouseenter="musicListHover = true; centerMusicItem()" @mouseleave="musicListHover = false">
-
-            <div class="hidden max-sm:block text-0.5rem text-center" @click="isCollapsed = !isCollapsed">
+            :class="{ 'sm:transform-translate-x-100%': isCollapsed, 'max-sm:transform-translate-y-100%': isCollapsed }">
+            <div class="absolute right-100% top-50% transform translate-[-50%,-50%] rotate-[90deg] text-0.2rem text-center transition-500 cursor-pointer 
+             max-sm:position-unset max-sm:transform-unset max-sm:text-0.5rem"
+                :class="{ 'sm:rotate-[-90deg]': !isCollapsed, 'sm:transform-translate-x-100%': isIdle && isCollapsed }"
+                @click="isCollapsed = !isCollapsed; !isCollapsed ? centerMusicItem() : null">
                 <svg viewBox="0 0 1819 1024" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                     fill="currentColor">
                     <path
@@ -176,7 +176,6 @@ const musicList = ref<IMusic[]>([])
 const total = ref(0)
 const loading = ref(false)
 const isCollapsed = ref(true)
-const musicListHover = ref(false)
 const musicListRef = ref()
 const musicRowRefs = ref<HTMLElement[]>([])
 const getList = async () => {
