@@ -1,7 +1,8 @@
 <template>
     <div class="h-100vh overflow-hidden">
 
-        <div v-if="currentMusic" class="h-100% flex flex-col">
+        <div v-if="currentMusic" class="h-100% flex flex-col blur-10px transition-500"
+            :class="{ 'animate-[unblur_1s_ease_forwards]': currentMusic }">
             <div
                 class="flex-1 flex items-center overflow-hidden px-0.6rem max-sm:flex-col max-sm:py-0.5rem max-sm:box-border">
                 <div class="flex-1 flex flex-col items-center justify-center max-sm:flex-none">
@@ -87,7 +88,7 @@
             </div>
         </div>
 
-        <div v-else class="h-100% flex items-center justify-center text-0.5rem max-sm:text-1rem">
+        <div v-else class="h-100% flex items-center justify-center text-0.5rem max-sm:text-1rem cursor-pointer" @click="isCollapsed = !isCollapsed">
             Moonc music
         </div>
 
@@ -212,8 +213,9 @@ const centerMusicItem = () => {
 
 const currentMusic = ref<IMusic>()
 const parsedLyrics = ref<ILyric[]>([])
-
+const playBlurAnimation = ref(false)
 const playMusic = async (music: IMusic) => {
+    playBlurAnimation.value = false
     if (isSerachWy.value) {
         const res = await addMusic({
             id: music.id
@@ -226,6 +228,10 @@ const playMusic = async (music: IMusic) => {
 
     setSource(currentMusic.value.url)
     play()
+
+    requestAnimationFrame(() => {
+        playBlurAnimation.value = true
+    })
 }
 
 const togglePlay = () => {
@@ -276,3 +282,14 @@ onMounted(() => {
 
 
 </script>
+<style>
+@keyframes unblur {
+    from {
+        filter: blur(8px);
+    }
+
+    to {
+        filter: blur(0);
+    }
+}
+</style>
