@@ -16,7 +16,6 @@ export function usePlayer() {
         if (src.value === url) return
         src.value = url
         audio.src = url
-        audio.load()
         isEnded.value = false
     }
 
