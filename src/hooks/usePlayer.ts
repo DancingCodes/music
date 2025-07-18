@@ -21,8 +21,13 @@ export function usePlayer() {
 
     function play() {
         if (!src.value) return
+
         isEnded.value = false
-        audio.play()
+        audio.play().catch(err => {
+            if (err.name === 'AbortError') {
+                console.log('播放时加载了新的资源,加载了新的音频资源');
+            }
+        })
     }
 
     function pause() {

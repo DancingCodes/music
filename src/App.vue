@@ -94,7 +94,7 @@
                         </svg>
                     </span>
 
-                    <span class="hidden max-sm:block" @click="isCollapsed = false; centerMusicItem()">
+                    <span class="hidden max-sm:block" @click="isCollapsed = false;">
                         <svg viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -123,7 +123,7 @@
             <div class="absolute right-100% top-50% transform translate-[-50%,-50%] rotate-[90deg] text-0.2rem text-center transition-500 cursor-pointer 
              max-sm:position-unset max-sm:transform-unset max-sm:text-0.5rem"
                 :class="{ 'sm:rotate-[-90deg]': !isCollapsed, 'sm:transform-translate-x-100%': isIdle && isCollapsed }"
-                @click="isCollapsed = !isCollapsed; !isCollapsed ? centerMusicItem() : null">
+                @click="isCollapsed = !isCollapsed;">
                 <svg viewBox="0 0 1819 1024" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
                     fill="currentColor">
                     <path
@@ -203,6 +203,12 @@ const musicList = ref<IMusic[]>([])
 const total = ref(0)
 const loading = ref(false)
 const isCollapsed = ref(true)
+watch(isEnded, val => {
+    if (val) {
+        centerMusicItem()
+    }
+})
+
 const musicListRef = ref()
 const musicRowRefs = ref<HTMLElement[]>([])
 const getList = async () => {
@@ -258,6 +264,10 @@ const playMusic = async (music: IMusic) => {
     setSource(currentMusic.value.url)
     play()
 
+    if (!isCollapsed.value) {
+        centerMusicItem()
+    }
+
     requestAnimationFrame(() => {
         playBlurAnimation.value = true
     })
@@ -272,6 +282,7 @@ const playRelative = async (direction: 'prev' | 'next') => {
     if (list.length === 0) return
 
     let index = 0
+
     if (playMode.value === 'loop') {
         index = list.findIndex(i => i.id === currentMusic.value?.id)
         if (index === -1) {
@@ -281,10 +292,14 @@ const playRelative = async (direction: 'prev' | 'next') => {
                 index = index === 0 ? list.length - 1 : index - 1
             }
             if (direction === 'next') {
-                if (list.length >= total.value) {
-                    index = 0
+                if (index === list.length - 1) {
+                    if (list.length >= total.value) {
+                        index = 0
+                    } else {
+                        await loadMore()
+                        index = index + 1
+                    }
                 } else {
-                    await loadMore()
                     index = index + 1
                 }
             }
