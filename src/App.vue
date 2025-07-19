@@ -19,8 +19,6 @@
                             :class="{ 'transform-rotate-[-16deg]': !isPlaying }">
                     </div>
 
-
-
                     <div class="flex flex-col items-center justify-center text-0.2rem max-sm:text-0.6rem">
                         <div class="mt-0.1rem">
                             {{ currentMusic.name }}
@@ -30,10 +28,12 @@
                         </div>
                     </div>
                 </div>
-                <div
-                    class="flex-1 h-88% overflow-y-auto pointer-events-none flex flex-col gap-0.05rem items-center text-0.15rem text-center no-scrollbar max-sm:text-0.5rem max-sm:mt-0.3rem max-sm:gap-0.1rem max-sm:h-unset">
+                <div class="flex-1 h-88% overflow-y-auto flex flex-col gap-0.05rem items-center text-0.15rem text-center no-scrollbar max-sm:text-0.5rem max-sm:mt-0.3rem max-sm:gap-0.1rem max-sm:h-unset"
+                    @scroll="scrollLyric">
                     <div v-for="(item, index) in parsedLyrics" :ref="el => { lyricRefs[index] = el as HTMLElement }"
-                        class="transition-500" :class="{ 'color-#ff0000 font-bold': currentLyricIndex === index }">
+                        @click="seekToLyric(item.time)"
+                        class="transition-500 hover:underline hover:decoration-dashed cursor-pointer"
+                        :class="{ 'color-#ff0000 font-bold': currentLyricIndex === index }">
                         {{ item.text }}
                     </div>
                 </div>
@@ -68,11 +68,6 @@
                                 d="M665.47 417.65l-345.03-244.3c-69.8-49.42-166.29 0.49-166.29 86.01v502.27c0 85.52 96.49 135.43 166.29 86.01l345.03-244.31c64.02-45.34 64.02-140.34 0-185.68zM811.82 868.52c-30.38 0-55-24.62-55-55V207.46c0-30.38 24.62-55 55-55s55 24.62 55 55v606.07c0 30.37-24.62 54.99-55 54.99z" />
                         </svg>
                     </span>
-
-
-
-
-
 
                     <span class="cursor-pointer" @click="togglePlayMode">
                         <svg v-if="playMode === 'loop'" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"
@@ -175,9 +170,9 @@ import { parseLyrics, type ILyric } from './utils/lyric';
 const { isIdle } = useHideOnIdle()
 useCursorAutoHide()
 
-const { isPlaying, currentTime, progress, buffered, isEnded, setSource, play, pause } = usePlayer()
+const { isPlaying, currentTime, progress, buffered, isEnded, setSource, play, seekTo, pause } = usePlayer()
 watch(currentTime, val => {
-    moveLyric(val)
+    autoMoveLyric(val)
 })
 watch(isEnded, val => {
     if (val) {
@@ -336,7 +331,11 @@ const togglePlayMode = () => {
 
 const lyricRefs = ref<HTMLElement[]>([])
 const currentLyricIndex = ref(0)
-const moveLyric = (currentTime: number) => {
+const autoMoveLyric = (currentTime: number) => {
+    if (isScrollLyric.value) {
+        return
+    }
+
     const index = parsedLyrics.value.findIndex((i, x) => {
         const next = parsedLyrics.value[x + 1]
         return currentTime >= i.time && (!next || currentTime < next.time)
@@ -352,11 +351,25 @@ const moveLyric = (currentTime: number) => {
     }
 }
 
+const isScrollLyric = ref(false)
+const scrollTimeout = ref()
+const scrollLyric = () => {
+    isScrollLyric.value = true
+    if (scrollTimeout) clearTimeout(scrollTimeout.value)
+    scrollTimeout.value = setTimeout(() => {
+        isScrollLyric.value = false
+    }, 3000)
+}
+
+
+const seekToLyric = (time: number) => {
+    isScrollLyric.value = false
+    seekTo(time)
+}
+
 onMounted(() => {
     getList()
 })
-
-
 </script>
 <style>
 @keyframes unblur {

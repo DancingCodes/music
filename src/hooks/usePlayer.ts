@@ -30,6 +30,11 @@ export function usePlayer() {
         })
     }
 
+    function seekTo(time: number) {
+        audio.currentTime = time
+        play()
+    }
+
     function pause() {
         if (!src.value) return
         audio.pause()
@@ -88,6 +93,7 @@ export function usePlayer() {
         isEnded,
         setSource,
         play,
+        seekTo,
         pause,
     }
 }
