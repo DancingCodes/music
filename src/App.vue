@@ -166,6 +166,7 @@ import { useCursorAutoHide } from './hooks/useCursorAutoHide';
 import { useHideOnIdle } from './hooks/useHideOnIdle';
 import { usePlayer } from './hooks/usePlayer';
 import { parseLyrics, type ILyric } from './utils/lyric';
+import { setTitle } from './utils/setTitle';
 
 const { isIdle } = useHideOnIdle()
 useCursorAutoHide()
@@ -254,6 +255,7 @@ const playMusic = async (music: IMusic) => {
     }
     currentMusic.value = music
 
+    setTitle(currentMusic.value.name)
     parsedLyrics.value = parseLyrics(currentMusic.value.lyric)
 
     setSource(currentMusic.value.url)
@@ -330,7 +332,7 @@ const togglePlayMode = () => {
 }
 
 const lyricRefs = ref<HTMLElement[]>([])
-const currentLyricIndex = ref(0)
+const currentLyricIndex = ref(-1)
 const autoMoveLyric = (currentTime: number) => {
     if (isScrollLyric.value) {
         return
@@ -343,6 +345,7 @@ const autoMoveLyric = (currentTime: number) => {
     const safeIndex = index === -1 ? 0 : index
 
     if (safeIndex !== currentLyricIndex.value) {
+        setTitle(parsedLyrics.value[index].text)
         lyricRefs.value[safeIndex].scrollIntoView({
             behavior: 'smooth',
             block: 'center',
